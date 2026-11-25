@@ -54,7 +54,7 @@ const char* Endstops::y2_sample() {
   // Samples are taken only while the operator presses the screen button.
   const bool raw = READ_ENDSTOP(Y_MIN_PIN);
   for (uint8_t i = 0; i < 4; ++i) {
-    safe_delay(3);
+    delay(3); // Avoid re-entering the LVGL event loop while sampling.
     if (bool(READ_ENDSTOP(Y_MIN_PIN)) != raw) return "Y unstable\\nRetry";
   }
   if (y2_stage == 0) {
