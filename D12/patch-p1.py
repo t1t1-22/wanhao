@@ -23,3 +23,8 @@ for name, end in [("ID_BABY_STEP_Z_P", "ID_BABY_STEP_Z_N"), ("ID_BABY_STEP_Z_N",
         raise SystemExit("Unexpected babystep handler")
     s = s[:a] + block.replace("has_adjust_z = 1;", "disp_z_offset_value();\\n      has_adjust_z = 1;".replace("\\n", "\n")) + s[b:]
 p.write_text(s)
+
+# Fail early if the pinned build is ever accidentally configured for a probe.
+config = Path('Marlin/Configuration.h')
+# The compiler copies the selected profile after this source patch.
+print('P1 UI patch applied; use only with the no-probe profile.')
