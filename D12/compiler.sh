@@ -13,6 +13,8 @@ cd "$travail/Marlin"
 test "$(git rev-parse HEAD)" = "$revision"
 "$travail/venv/bin/python" "$projet/patch-p1.py"
 cp "$projet/Configuration.h" "$projet/Configuration_adv.h" Marlin/
+! grep -Eq '^\s*#define\s+BLTOUCH(\s|$)' Marlin/Configuration.h || exit 1
+
 "$travail/venv/bin/pio" run -e "$cible"
 "$travail/venv/bin/python" "$projet/verifier.py" ".pio/build/$cible/Robin_nano_v3.bin"
 sortie="$(mktemp -d "$projet/compilation-XXXXXXXX")"

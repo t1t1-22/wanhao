@@ -2,6 +2,6 @@ D12-P1 — firmware expérimental sans BLTouch
 
 Base Marlin 2.1.2.1 et configuration Wanhao M2 FULL TMC sans BLTouch. Ce n'est PAS le binaire constructeur 2.0.8.2.1 fonctionnel : celui-ci reste intact. Pas de correctif Y1/Y2 dans cette version.
 
-Bouton PLA de l'écran préchauffage : règle simultanément buse 215 et plateau 65 avec le gestionnaire thermique normal. Babystep Z : affiche les corrections acceptées cumulées depuis le dernier référencement Z, en mm. Mise à jour à chaque appui et périodiquement. Pas d'offset permanent, ni mouvement autorisé avant homing par le babystep.
+Bouton PLA de l'écran préchauffage : règle simultanément buse 215 et plateau 65 avec le gestionnaire thermique normal. Babystep Z : affiche les corrections acceptées cumulées depuis le dernier référencement Z, en mm. Mise à jour par le rafraîchissement périodique de l’écran. Pas d'offset permanent, ni mouvement autorisé avant homing par le babystep.
 
 Avant essai, restaurer câblage sans BLTouch, vérifier températures à froid et fins de course, surveiller homing et chauffe. Revenir au firmware officiel si anomalie. Compilation non synonyme de validation matérielle.
