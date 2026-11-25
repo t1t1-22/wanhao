@@ -1,0 +1,27 @@
+name: Wanhao D12 firmware
+on:
+  push:
+    branches: [firmware/d12-300-y1]
+permissions:
+  contents: read
+jobs:
+  compile:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: d12-y1-pio-6.1.18-v1
+          save-always: true
+      - name: Compiler et vérifier le firmware
+        run: bash D12/compiler.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Wanhao-D12-300-MKS32-3DTouch-Y1
+          path: D12/compilation-*/*
+          if-no-files-found: error

@@ -1,0 +1,11 @@
+--- a/Marlin/src/module/motion.cpp
++++ b/Marlin/src/module/motion.cpp
+@@ -2073,7 +2073,7 @@
+             case W_AXIS: es = W_ENDSTOP; break;
+           #endif
+         }
+-        if (TEST(endstops.state(), es)) {
++        if (axis == Y_AXIS && TEST(endstops.state(), es)) {
+           SERIAL_ECHO_MSG("Bad ", AS_CHAR(AXIS_CHAR(axis)), " Endstop?");
+           kill(GET_TEXT_F(MSG_KILL_HOMING_FAILED));
+         }
