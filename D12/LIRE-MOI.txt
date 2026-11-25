@@ -1,17 +1,29 @@
-Wanhao D12/300 Pro Max — projet de compilation D12-Y1
-Carte MKS Robin Nano 3.2, cinq TMC2209, 3DTouch sur l’entrée Z−.
+# D12-Y2 — firmware expérimental, MKS Robin Nano V3.2 / 5 TMC2209 / 3D Touch
 
-Ce projet associe Marlin 2.1.2.1 aux fichiers de configuration de l’archive Wanhao D12300-MKS3.2-5TMC-BL.zip (bêta M2). Il se distingue du firmware constructeur 2.0.8.2.1 déjà essayé. Les personnalisations du constructeur en dehors des deux fichiers de configuration, notamment les menus, peuvent différer.
+Base : Marlin 2.1.2.1, configurations Wanhao M2 5TMC BL, version Y1 conservée sur sa branche. Ce n'est pas le firmware constructeur 2.0.8.2.1 recompilé.
 
-Modification
-La vérification DETECT_BROKEN_ENDSTOP est activée et limitée à Y. Marlin fait une première approche, s’écarte de 5 mm et vérifie que la butée s’est relâchée. Si elle est encore active, il arrête la machine avant le centrage pour Z. Le port série indique « Bad Y Endstop? ». Si elle est libre, Marlin fait sa seconde approche et vérifie le contact comme dans la configuration de départ. Cette modification traite un contact qui reste actif pendant le recul. Une direction physique incorrecte ou un signal intermittent exigent un diagnostic distinct.
+Objectif : vérifier et, si nécessaire, adapter la polarité du signal de la butée mécanique Y sur PD2, sans modifier le sens moteur ni le câblage.
 
-Compilation sur macOS ou Linux
-Avec Git et Python 3.11 disponibles, ouvrir un terminal dans le dossier D12 et exécuter
-  bash compiler.sh
+## Avant tout déplacement
 
-Le script télécharge Marlin à une révision précise, applique la modification, installe PlatformIO dans un environnement temporaire et compile. Une connexion Internet est nécessaire pour les dépendances. Il écrit le résultat dans un nouveau dossier compilation-XXXXXXXX après avoir vérifié l’image. Il n’envoie aucune commande à l’imprimante.
+1. Imprimante éteinte, refroidie et débranchée : installer le 3D Touch conformément à sa documentation, vérifier que l'ancienne butée Z est débranchée et laisser le plateau à mi-course, buse suffisamment haute. Remettre sous tension.
+2. Ouvrir Tool > Home. Le nouveau bouton "Y test / Release+tap" occupe la troisième case en bas. Ne pas lancer Home tout de suite.
+3. Butée Y arrière relâchée : toucher le bouton. Il affiche Y 0 ou Y 1, puis Press+tap.
+4. Maintenir la butée mécanique Y enfoncée et toucher le même bouton. Le niveau doit changer. Il indique Release.
+5. Relâcher la butée et toucher à nouveau. Y OK / Verified doit s'afficher. Si "same" persiste ou si le niveau ne change pas, ne pas lancer Home : la carte ne voit pas la transition. Un câblage, le jumper DIAG ou l'entrée physique peuvent être en cause.
+6. Ce test ne commande aucun mouvement et doit être refait après chaque redémarrage. La polarité déduite reste uniquement en RAM. Une erreur lors de la procédure peut donner une mauvaise polarité : respecter strictement l'ordre relâché, pressé, relâché.
+7. Seulement si le test réussit, avec la buse dégagée, faire Home Y sous surveillance depuis le menu. Couper aussitôt si le mouvement initial s'éloigne de la butée ou si le moteur force. La vitesse de Y est ramenée à 10 mm/s. Le premier contact, son relâchement au recul et le second contact sont contrôlés avant validation de la position Y. Le test ne protège pas contre toutes les défaillances mécaniques ni une coupure du signal pendant la course.
+8. Vérifier également le déclenchement réel du 3D Touch avant Home Z. Les offsets de sonde (+10,+10,0) proviennent de la bêta officielle et ne sont pas validés pour le montage réel. Ne pas lancer G29 ni chauffer/imprimer avant calibration des offsets et contrôle des températures.
+9. Ne pas utiliser Y2 en production sans essais matériels. Revenir au firmware d'origine fonctionnel sans 3D Touch si nécessaire, en restaurant le câblage d'origine.
 
-Vérification sur la machine
-L’archive livrée contient les entrées de compilation. Le matériel n’a pas été testé. Avant le premier Home, contrôler à froid que la butée arrière change d’état avec M119, de « open » libre à « TRIGGERED » appuyée. Si le premier déplacement Y s’éloigne franchement de la butée, couper l’alimentation. La détection de contact bloqué intervient après la première approche.
-Le profil M2 fournit par défaut des décalages de sonde de X +10, Y +10 et Z 0 mm. Vérifier les décalages de ton support et régler la hauteur Z avant tout maillage ou impression. Les valeurs enregistrées en EEPROM peuvent différer.
+## Compilation
+
+`bash D12/compiler.sh` (ou GitHub Actions) : récupère la révision Marlin déjà épinglée dans Y1, applique patch-y2.py avec vérification de chaque ancre, copie les configurations, compile et contrôle le binaire. Les fichiers d'interface sont générés avec le binaire. La compilation ne prouve pas la compatibilité matérielle.
+
+## Ce qui change
+
+- Test de trois transitions manuelles du signal Y (repos, contact, repos), aucun mouvement commandé par ce bouton.
+- La polarité mesurée est utilisée par le polling Y et par M119, seulement après validation. Aucun changement du brochage ni du sens moteur.
+- G28 est interdit tant que le test n'a pas réussi ; en cas d'erreur le firmware s'arrête. Les sécurités Marlin de mouvement et de référencement restent actives.
+- Vitesse Y homing 10 mm/s au lieu de 50. Contact spécifique Y et relâchement confirmés à chaque référencement.
+- 3D Touch, 5 TMC2209, Input Shaping et offsets par défaut du projet Y1 conservés.

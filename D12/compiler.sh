@@ -11,7 +11,7 @@ python3 -m venv "$travail/venv"
 git clone --depth 1 --branch 2.1.2.1 https://github.com/MarlinFirmware/Marlin.git "$travail/Marlin"
 cd "$travail/Marlin"
 test "$(git rev-parse HEAD)" = "$revision"
-git apply "$projet/butee-Y.patch"
+"$travail/venv/bin/python" "$projet/patch-y2.py"
 cp "$projet/Configuration.h" "$projet/Configuration_adv.h" Marlin/
 "$travail/venv/bin/pio" run -e "$cible"
 "$travail/venv/bin/python" "$projet/verifier.py" ".pio/build/$cible/Robin_nano_v3.bin"
